@@ -30,6 +30,11 @@ module.exports = {
           },
           {
             loader: 'css-loader',
+            options: {
+              modules: {
+                auto: /^((?!node_modules).)*$/i,
+              },
+            },
           },
         ],
       },
