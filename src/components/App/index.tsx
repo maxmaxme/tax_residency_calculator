@@ -2,6 +2,7 @@ import React from 'react';
 import { DatesInput } from '../DatesInput';
 import { Interval } from '../../types/interval';
 import { IntervalRows } from '../IntervalRows';
+import { getIntervalsCache, setIntervalsCache } from '../../utils/cache';
 
 export type Row = {
   inRussia: boolean,
@@ -42,12 +43,10 @@ const calcDays = (intervals: Interval[]): Row[] => {
 };
 
 export const App = () => {
-  const today = new Date();
-  const todayTimestamp = today.getTime();
-
-  const [intervalsNotInRussia, setIntervalsNotInRussia] = React.useState<Interval[]>([[1638057600000, todayTimestamp]]);
+  const [intervalsNotInRussia, setIntervalsNotInRussia] = React.useState<Interval[]>(getIntervalsCache());
   const setIntervals = (intervals: Interval[]) => {
     // intervals = intervals.sort((a, b) => a[0] - b[0]);
+    setIntervalsCache(intervals);
     setIntervalsNotInRussia(intervals);
   };
 
