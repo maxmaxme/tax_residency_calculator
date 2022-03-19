@@ -1,9 +1,10 @@
 import React, { ChangeEvent } from 'react';
-import { Interval } from '../../types/interval';
+import { IntervalId, IntervalMap } from '../../types/interval';
+import { convertToUtc } from '../../utils/timezone';
 
 type Props = {
-  intervals: Interval[],
-  setIntervals(intervals: Interval[]): void,
+  intervals: IntervalMap,
+  setIntervals(intervals: IntervalMap): void,
 }
 
 type IntervalInputProps = {
@@ -31,11 +32,13 @@ const IntervalInput = ({
 
   const onStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const start = new Date(e.target.value);
+    start.setHours(0, 0, 0, 0);
     onChange(start, end);
   };
 
   const onEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const end = new Date(e.target.value);
+    end.setHours(0, 0, 0, 0);
     onChange(start, end);
   };
 
@@ -52,8 +55,8 @@ const RawIntervals = ({
   intervals,
   setIntervals,
 }: {
-  intervals: Interval[],
-  setIntervals(intervals: Interval[]): void,
+  intervals: IntervalMap,
+  setIntervals(intervals: IntervalMap): void,
 }) => {
   const onChangeValue = (e: ChangeEvent<HTMLTextAreaElement>) => {
     try {
@@ -77,34 +80,40 @@ export const DatesInput = ({
   intervals,
   setIntervals,
 }: Props) => {
-  const todayTimestamp = new Date().getTime();
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+  const todayTimestamp = convertToUtc(today).getTime();
 
-  const onChange = (index: number) => (start?: Date, end?: Date) => {
-    const newIntervals = [...intervals];
+  const onChange = (id: IntervalId) => (start?: Date, end?: Date) => {
     if (!start) return;
-    newIntervals[index] = [start?.getTime(), end?.getTime() || todayTimestamp];
+    const newIntervals = { ...intervals };
+    newIntervals[id] = [convertToUtc(start)?.getTime(), end ? convertToUtc(end).getTime() : todayTimestamp];
     setIntervals(newIntervals);
   };
 
-  const removeInterval = (index: number) => () => {
-    const newIntervals = [...intervals];
-    newIntervals.splice(index, 1);
+  const removeInterval = (id: IntervalId) => () => {
+    const newIntervals = { ...intervals };
+    delete newIntervals[id];
     setIntervals(newIntervals);
   };
 
   return (<>
     <RawIntervals intervals={intervals} setIntervals={setIntervals} />
-    {intervals.map(([start, end], index) => {
+    {Object.keys(intervals).map((id) => {
+      const [start, end] = intervals[id];
       return (
         <IntervalInput
-          key={index}
+          key={id}
           start={new Date(start)}
           end={new Date(end)}
-          onChange={onChange(index)}
-          removeInterval={removeInterval(index)}
+          onChange={onChange(id)}
+          removeInterval={removeInterval(id)}
         />
       );
     })}
-    <button onClick={() => setIntervals([...intervals, [todayTimestamp, todayTimestamp]])}>+</button>
+    <button onClick={() => {
+      const newInterval = [todayTimestamp, todayTimestamp];
+      setIntervals({ ...intervals, [Object.values(intervals).length]: newInterval });
+    }}>+</button>
   </>);
 };

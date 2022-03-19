@@ -13,8 +13,8 @@ const formatDatesInterval = (date1: Date, date2: Date) => {
 };
 
 const calculateDays = (date1: Date, date2: Date) => {
-  const diffTime = Math.abs(date2.getTime() - date1.getTime());
-  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+  const diffTime = date2.getTime() - date1.getTime();
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
 };
 
 export const IntervalRow = ({
