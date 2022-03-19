@@ -64,8 +64,6 @@ const RawIntervals = ({
     }
   };
 
-  console.log(intervals, JSON.stringify(intervals));
-
   return (
     <textarea
       style={{ width: 300 }}

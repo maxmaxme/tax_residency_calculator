@@ -12,6 +12,11 @@ const formatDatesInterval = (date1: Date, date2: Date) => {
   );
 };
 
+const calculateDays = (date1: Date, date2: Date) => {
+  const diffTime = Math.abs(date2.getTime() - date1.getTime());
+  return Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+};
+
 export const IntervalRow = ({
   inRussia,
   dateStart,
@@ -20,7 +25,7 @@ export const IntervalRow = ({
   return (
     <div
     >
-      {inRussia ? 'in' : 'out'} {formatDatesInterval(dateStart, dateEnd)}
+      {inRussia ? 'in' : 'out'} {formatDatesInterval(dateStart, dateEnd)} ({calculateDays(dateStart, dateEnd)} days)
     </div>
   );
 };
