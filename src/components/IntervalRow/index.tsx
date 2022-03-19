@@ -1,4 +1,5 @@
 import React from 'react';
+import styles from './index.css';
 
 type Props = {
   inRussia: boolean;
@@ -24,6 +25,7 @@ export const IntervalRow = ({
 }: Props) => {
   return (
     <div
+      className={styles.row}
     >
       {inRussia ? 'in' : 'out'} {formatDatesInterval(dateStart, dateEnd)} ({calculateDays(dateStart, dateEnd)} days)
     </div>
