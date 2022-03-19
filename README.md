@@ -1,3 +1,3 @@
-# Template
+# Tax residency calculator
 
-Empty template with React, Typescript, ESLint and Jest
+Russia tax residency calculator.
