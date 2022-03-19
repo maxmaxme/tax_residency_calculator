@@ -1,50 +1,44 @@
 import React from 'react';
+import { DatesInput } from '../DatesInput';
+import { Interval } from '../../types/interval';
 
-const datesNotInRussia: [string, string][] = [
-  ['2021-11-28', '2022-05-01'],
-];
+const mSecondsInDay = 24 * 60 * 60 * 1000;
 
-const intervalsToTimestamps = (intervals: [string, string][]): [number, number][] => {
-  return intervals.map(([start, end]) => {
-    const startDate = new Date(start);
-    const endDate = end.length ? new Date(end) : new Date();
-    return [
-      startDate.getTime(),
-      endDate.getTime(),
-    ];
-  });
-};
-
-const isTimeInIntervals = (time: number, intervals: [number, number][]): boolean => {
+const isTimeInIntervals = (time: number, intervals: Interval[]): boolean => {
   return intervals.some(([start, end]) => time >= start && time <= end);
 };
 
-export const App = () => {
-  const intervalsNotInRussia = intervalsToTimestamps(datesNotInRussia);
-  const maxEndDate = intervalsNotInRussia.reduce((max, [_, end]) => Math.max(max, end), 0);
-
-  let today = new Date();
-  if (today.getTime() < maxEndDate) {
-    today = new Date(maxEndDate);
+const calcDays = (intervals: Interval[]) => {
+  let yearEnd = new Date();
+  const maxEndDate = intervals.reduce((max, [_, end]) => Math.max(max, end), 0);
+  if (yearEnd.getTime() < maxEndDate) {
+    yearEnd = new Date(maxEndDate);
   }
-  today.setHours(0, 0, 0, 0);
-  const minus12months = new Date(today.getFullYear(), today.getMonth() - 12, today.getDate() + 1);
+  yearEnd.setHours(0, 0, 0, 0);
+  const yearEndTimestamp = yearEnd.getTime();
 
-  const todayTimestamp = today.getTime();
-  const minus12monthsTimestamp = minus12months.getTime();
-  console.log(todayTimestamp);
-  console.log(minus12monthsTimestamp);
-
-  const secondsInDay = 24 * 60 * 60 * 1000;
+  const yearStart = new Date(yearEnd.getFullYear(), yearEnd.getMonth() - 12, yearEnd.getDate() + 1);
+  const yearStartTimestamp = yearStart.getTime();
 
   const rows = [];
-  for (let time = todayTimestamp; time >= minus12monthsTimestamp; time -= secondsInDay) {
-    const inRussia = !isTimeInIntervals(time, intervalsNotInRussia);
+  for (let time = yearStartTimestamp; time <= yearEndTimestamp; time += mSecondsInDay) {
+    const inRussia = !isTimeInIntervals(time, intervals);
     rows.push({ inRussia, time });
   }
 
-  console.log(rows);
+  return rows;
+};
+
+export const App = () => {
+  const today = new Date();
+  const todayTimestamp = today.getTime();
+
+  const [intervalsNotInRussia, setIntervalsNotInRussia] = React.useState<Interval[]>([[1638057600000, todayTimestamp]]);
+
+  const rows = calcDays(intervalsNotInRussia);
+
   return (<>
+    <DatesInput intervals={intervalsNotInRussia} setIntervals={setIntervalsNotInRussia} />
     <div>in russia: {rows.filter(({ inRussia }) => inRussia).length}</div>
     <div>out of russia: {rows.filter(({ inRussia }) => !inRussia).length}</div>
 
