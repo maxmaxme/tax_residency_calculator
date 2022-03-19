@@ -1,6 +1,8 @@
-export type Interval = [number, number];
+export type Interval = {
+  id: IntervalId;
+  start: number;
+  end: number;
+};
 
 export type IntervalId = string;
-export type IntervalMap = {
-  [key: IntervalId]: Interval;
-};
+export type Intervals = Interval[];
