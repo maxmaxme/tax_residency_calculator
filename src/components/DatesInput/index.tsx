@@ -36,16 +36,16 @@ const IntervalInput = ({
   onChange,
   removeInterval,
 }: IntervalInputProps) => {
-  const onStartChange = (start: Date | null) => {
-    if (!start) return;
-    start.setHours(0, 0, 0, 0);
-    onChange(start, end);
+  const onStartChange = (startValue: Date | null) => {
+    if (!startValue) return;
+    startValue.setHours(0, 0, 0, 0);
+    onChange(startValue, end);
   };
 
-  const onEndChange = (end: Date | null) => {
-    if (!end) return;
-    end.setHours(0, 0, 0, 0);
-    onChange(start, end);
+  const onEndChange = (endValue: Date | null) => {
+    if (!endValue) return;
+    endValue.setHours(0, 0, 0, 0);
+    onChange(start, endValue);
   };
 
   return (
@@ -62,14 +62,13 @@ const RawIntervals = ({
   setIntervals,
 }: {
   intervals: Intervals,
-  setIntervals(intervals: Intervals): void,
+  setIntervals(newValue: Intervals): void,
 }) => {
   const onChangeValue = (e: ChangeEvent<HTMLTextAreaElement>) => {
     try {
-      const intervals = JSON.parse(e.target.value);
-      setIntervals(intervals);
-    } catch (e) {
-      console.error(e);
+      setIntervals(JSON.parse(e.target.value));
+    } catch (error) {
+      console.error(error);
     }
   };
 
