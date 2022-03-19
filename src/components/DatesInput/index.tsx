@@ -1,8 +1,10 @@
-import React, { ChangeEvent } from 'react';
+import React from 'react';
 import { Interval, IntervalId, Intervals } from '../../types/interval';
 import { convertToUtc } from '../../utils/timezone';
 import DatePickerComponent from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import styles from './index.css';
+import { RawIntervals } from '../RawIntervals';
 
 type Props = {
   intervals: Intervals,
@@ -49,35 +51,11 @@ const IntervalInput = ({
   };
 
   return (
-    <div style={{ display: 'flex' }}>
+    <div className={styles.inputContainer}>
       <DatePicker selected={start} onChange={(date) => onStartChange(date)} />
       <DatePicker selected={end} onChange={(date) => onEndChange(date)} />
       <button onClick={removeInterval}>×</button>
     </div>
-  );
-};
-
-const RawIntervals = ({
-  intervals,
-  setIntervals,
-}: {
-  intervals: Intervals,
-  setIntervals(newValue: Intervals): void,
-}) => {
-  const onChangeValue = (e: ChangeEvent<HTMLTextAreaElement>) => {
-    try {
-      setIntervals(JSON.parse(e.target.value));
-    } catch (error) {
-      console.error(error);
-    }
-  };
-
-  return (
-    <textarea
-      style={{ width: 300 }}
-      onChange={onChangeValue}
-      value={JSON.stringify(intervals)}
-    />
   );
 };
 
@@ -106,7 +84,6 @@ export const DatesInput = ({
   };
 
   return (<>
-    <RawIntervals intervals={intervals} setIntervals={setIntervals} />
     {intervals.map(({ id, start, end }) => {
       return (
         <IntervalInput
@@ -126,5 +103,6 @@ export const DatesInput = ({
       };
       setIntervals([...intervals, newInterval]);
     }}>+</button>
+    <RawIntervals intervals={intervals} setIntervals={setIntervals} />
   </>);
 };

@@ -1,6 +1,7 @@
 import { IntervalRow } from '../IntervalRow';
 import React, { useMemo } from 'react';
 import { GroupedRow, Row } from '../App';
+import styles from './index.css';
 
 const groupRows = (rows: Row[]): GroupedRow[] => {
   const groupedRows = [];
@@ -36,7 +37,7 @@ export const IntervalRows = ({ rows }: { rows: Row[] }) => {
   const groupedRows = useMemo(() => groupRows(rows), [rows]);
 
   return (
-    <>
+    <div className={styles.intervalRows}>
       {groupedRows.map(({ inRussia, timeStart, timeEnd }, index) => {
         return (
           <IntervalRow
@@ -47,6 +48,6 @@ export const IntervalRows = ({ rows }: { rows: Row[] }) => {
           />
         );
       })}
-    </>
+    </div>
   );
 };

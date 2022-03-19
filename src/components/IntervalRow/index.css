@@ -1,3 +1,7 @@
- .row {
-     color: red;
- }
+.row {
+    color: darkgoldenrod;
+}
+
+.row--in_russia {
+    color: green;
+}
