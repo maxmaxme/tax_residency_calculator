@@ -24,13 +24,11 @@ const groupRows = (rows: Row[]): GroupedRow[] => {
       groupEnd = row.time;
     }
   }
-  if (groupStart !== groupEnd) {
-    groupedRows.push({
-      inRussia: groupInRussia,
-      timeStart: groupStart,
-      timeEnd: groupEnd,
-    });
-  }
+  groupedRows.push({
+    inRussia: groupInRussia,
+    timeStart: groupStart,
+    timeEnd: groupEnd,
+  });
   return groupedRows;
 };
 

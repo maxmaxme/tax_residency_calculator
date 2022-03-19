@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { DatesInput } from '../DatesInput';
-import { Interval } from '../../types/interval';
+import { IntervalMap } from '../../types/interval';
 import { IntervalRows } from '../IntervalRows';
 import { getIntervalsCache, setIntervalsCache } from '../../utils/cache';
+import { convertToUtc } from '../../utils/timezone';
 
 export type Row = {
   inRussia: boolean,
@@ -17,20 +18,24 @@ export type GroupedRow = {
 
 const mSecondsInDay = 24 * 60 * 60 * 1000;
 
-const isTimeInIntervals = (time: number, intervals: Interval[]): boolean => {
-  return intervals.some(([start, end]) => time >= start && time <= end);
+const isTimeInIntervals = (time: number, intervals: IntervalMap): boolean => {
+  return Object.values(intervals).some(([start, end]) => time >= start && time <= end);
 };
 
-const calcDays = (intervals: Interval[]): Row[] => {
+const calcDays = (intervals: IntervalMap): Row[] => {
   let yearEnd = new Date();
-  const maxEndDate = intervals.reduce((max, [_, end]) => Math.max(max, end), 0);
+
+  const maxEndDate = Object.values(intervals).reduce((max, [_, end]) => Math.max(max, end), 0);
   if (yearEnd.getTime() < maxEndDate) {
     yearEnd = new Date(maxEndDate);
   }
   yearEnd.setHours(0, 0, 0, 0);
+  yearEnd = convertToUtc(yearEnd);
   const yearEndTimestamp = yearEnd.getTime();
 
-  const yearStart = new Date(yearEnd.getFullYear(), yearEnd.getMonth() - 12, yearEnd.getDate() + 1);
+  let yearStart = new Date(yearEnd.getFullYear(), yearEnd.getMonth() - 12, yearEnd.getDate() + 1);
+  yearStart = convertToUtc(yearStart);
+
   const yearStartTimestamp = yearStart.getTime();
 
   const rows = [];
@@ -43,14 +48,13 @@ const calcDays = (intervals: Interval[]): Row[] => {
 };
 
 export const App = () => {
-  const [intervalsNotInRussia, setIntervalsNotInRussia] = React.useState<Interval[]>(getIntervalsCache());
-  const setIntervals = (intervals: Interval[]) => {
-    // intervals = intervals.sort((a, b) => a[0] - b[0]);
+  const [intervalsNotInRussia, setIntervalsNotInRussia] = React.useState<IntervalMap>(getIntervalsCache());
+  const setIntervals = (intervals: IntervalMap) => {
     setIntervalsCache(intervals);
     setIntervalsNotInRussia(intervals);
   };
 
-  const rows = calcDays(intervalsNotInRussia);
+  const rows = useMemo(() => calcDays(intervalsNotInRussia), [intervalsNotInRussia]);
 
   return (<>
     <DatesInput intervals={intervalsNotInRussia} setIntervals={setIntervals} />
