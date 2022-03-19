@@ -1,6 +1,8 @@
 import React, { ChangeEvent } from 'react';
 import { Interval, IntervalId, Intervals } from '../../types/interval';
 import { convertToUtc } from '../../utils/timezone';
+import DatePickerComponent from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 type Props = {
   intervals: Intervals,
@@ -14,38 +16,42 @@ type IntervalInputProps = {
   removeInterval(): void,
 }
 
+const DatePicker = (props: {
+  selected?: Date,
+  onChange(date: Date | null): void
+}) => {
+  return (
+    <div>
+      <DatePickerComponent
+        dateFormat="dd.MM.yyyy"
+        {...props}
+      />
+    </div>
+  );
+};
+
 const IntervalInput = ({
   start,
   end,
   onChange,
   removeInterval,
 }: IntervalInputProps) => {
-  const toInput = (date?: Date) => {
-    if (!date) return '';
-
-    return date.getFullYear().toString().padStart(4, '0') +
-      '-' +
-      (date.getMonth() + 1).toString().padStart(2, '0') +
-      '-' +
-      date.getDate().toString().padStart(2, '0');
-  };
-
-  const onStartChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const start = new Date(e.target.value);
+  const onStartChange = (start: Date | null) => {
+    if (!start) return;
     start.setHours(0, 0, 0, 0);
     onChange(start, end);
   };
 
-  const onEndChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const end = new Date(e.target.value);
+  const onEndChange = (end: Date | null) => {
+    if (!end) return;
     end.setHours(0, 0, 0, 0);
     onChange(start, end);
   };
 
   return (
-    <div>
-      <input type="date" value={toInput(start)} onChange={onStartChange} />
-      <input type="date" value={toInput(end)} onChange={onEndChange} />
+    <div style={{ display: 'flex' }}>
+      <DatePicker selected={start} onChange={(date) => onStartChange(date)} />
+      <DatePicker selected={end} onChange={(date) => onEndChange(date)} />
       <button onClick={removeInterval}>×</button>
     </div>
   );
