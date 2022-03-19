@@ -1,15 +1,15 @@
-import { IntervalMap } from '../types/interval';
+import { Intervals } from '../types/interval';
 
 const INTERVALS_CACHE_KEY = 'intervals';
 
-export const getIntervalsCache = (): IntervalMap => {
+export const getIntervalsCache = (): Intervals => {
   try {
-    return JSON.parse(localStorage.getItem(INTERVALS_CACHE_KEY) || '{}');
+    return JSON.parse(localStorage.getItem(INTERVALS_CACHE_KEY) || '[]');
   } catch (e) {
-    return {};
+    return [];
   }
 };
 
-export const setIntervalsCache = (intervals: IntervalMap): void => {
+export const setIntervalsCache = (intervals: Intervals): void => {
   localStorage.setItem(INTERVALS_CACHE_KEY, JSON.stringify(intervals));
 };

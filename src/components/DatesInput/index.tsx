@@ -1,10 +1,10 @@
 import React, { ChangeEvent } from 'react';
-import { IntervalId, IntervalMap } from '../../types/interval';
+import { Interval, IntervalId, Intervals } from '../../types/interval';
 import { convertToUtc } from '../../utils/timezone';
 
 type Props = {
-  intervals: IntervalMap,
-  setIntervals(intervals: IntervalMap): void,
+  intervals: Intervals,
+  setIntervals(intervals: Intervals): void,
 }
 
 type IntervalInputProps = {
@@ -55,8 +55,8 @@ const RawIntervals = ({
   intervals,
   setIntervals,
 }: {
-  intervals: IntervalMap,
-  setIntervals(intervals: IntervalMap): void,
+  intervals: Intervals,
+  setIntervals(intervals: Intervals): void,
 }) => {
   const onChangeValue = (e: ChangeEvent<HTMLTextAreaElement>) => {
     try {
@@ -86,21 +86,23 @@ export const DatesInput = ({
 
   const onChange = (id: IntervalId) => (start?: Date, end?: Date) => {
     if (!start) return;
-    const newIntervals = { ...intervals };
-    newIntervals[id] = [convertToUtc(start)?.getTime(), end ? convertToUtc(end).getTime() : todayTimestamp];
+    const newIntervals = [...intervals];
+    const index = newIntervals.findIndex((i) => i.id === id);
+    newIntervals[index] = {
+      id: newIntervals[index].id,
+      start: convertToUtc(start).getTime(),
+      end: end ? convertToUtc(end).getTime() : todayTimestamp,
+    };
     setIntervals(newIntervals);
   };
 
   const removeInterval = (id: IntervalId) => () => {
-    const newIntervals = { ...intervals };
-    delete newIntervals[id];
-    setIntervals(newIntervals);
+    setIntervals(intervals.filter((i) => i.id !== id));
   };
 
   return (<>
     <RawIntervals intervals={intervals} setIntervals={setIntervals} />
-    {Object.keys(intervals).map((id) => {
-      const [start, end] = intervals[id];
+    {intervals.map(({ id, start, end }) => {
       return (
         <IntervalInput
           key={id}
@@ -112,8 +114,12 @@ export const DatesInput = ({
       );
     })}
     <button onClick={() => {
-      const newInterval = [todayTimestamp, todayTimestamp];
-      setIntervals({ ...intervals, [Object.values(intervals).length]: newInterval });
+      const newInterval: Interval = {
+        id: String(intervals.length),
+        start: todayTimestamp,
+        end: todayTimestamp,
+      };
+      setIntervals([...intervals, newInterval]);
     }}>+</button>
   </>);
 };
