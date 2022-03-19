@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { ChangeEvent } from 'react';
 import { Interval } from '../../types/interval';
 
 type Props = {
@@ -47,6 +47,34 @@ const IntervalInput = ({
     </div>
   );
 };
+
+const RawIntervals = ({
+  intervals,
+  setIntervals,
+}: {
+  intervals: Interval[],
+  setIntervals(intervals: Interval[]): void,
+}) => {
+  const onChangeValue = (e: ChangeEvent<HTMLTextAreaElement>) => {
+    try {
+      const intervals = JSON.parse(e.target.value);
+      setIntervals(intervals);
+    } catch (e) {
+      console.error(e);
+    }
+  };
+
+  console.log(intervals, JSON.stringify(intervals));
+
+  return (
+    <textarea
+      style={{ width: 300 }}
+      onChange={onChangeValue}
+      value={JSON.stringify(intervals)}
+    />
+  );
+};
+
 export const DatesInput = ({
   intervals,
   setIntervals,
@@ -65,7 +93,9 @@ export const DatesInput = ({
     newIntervals.splice(index, 1);
     setIntervals(newIntervals);
   };
+
   return (<>
+    <RawIntervals intervals={intervals} setIntervals={setIntervals} />
     {intervals.map(([start, end], index) => {
       return (
         <IntervalInput
