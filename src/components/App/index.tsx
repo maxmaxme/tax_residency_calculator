@@ -4,6 +4,8 @@ import { Intervals } from '../../types/interval';
 import { IntervalRows } from '../IntervalRows';
 import { getIntervalsCache, setIntervalsCache } from '../../utils/cache';
 import { convertToUtc } from '../../utils/timezone';
+import cn from 'classnames';
+import styles from './index.css';
 
 export type Row = {
   inRussia: boolean,
@@ -59,8 +61,8 @@ export const App = () => {
 
   return (<>
     <DatesInput intervals={intervalsNotInRussia} setIntervals={setIntervals} />
-    <div>in russia: {rows.filter(({ inRussia }) => inRussia).length}</div>
-    <div>out of russia: {rows.filter(({ inRussia }) => !inRussia).length}</div>
+    <div className={cn(styles.summary_row, styles['summary_row--inside'])}>in russia: {rows.filter(({ inRussia }) => inRussia).length}</div>
+    <div className={cn(styles.summary_row, styles['summary_row--outside'])}>not in russia: {rows.filter(({ inRussia }) => !inRussia).length}</div>
 
     <IntervalRows rows={rows} />
   </>);

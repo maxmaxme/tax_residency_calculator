@@ -1,0 +1,11 @@
+.summary_row {
+    font-weight: bold;
+}
+
+.summary_row--inside {
+    color: green;
+}
+
+.summary_row--outside {
+    color: darkgoldenrod;
+}
