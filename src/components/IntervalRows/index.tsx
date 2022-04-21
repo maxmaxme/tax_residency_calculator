@@ -5,8 +5,8 @@ import styles from './index.css';
 
 const groupRows = (rows: Row[]): GroupedRow[] => {
   const groupedRows = [];
-  let groupStart = 0;
-  let groupEnd = 0;
+  let groupStart = rows[0].time;
+  let groupEnd = rows[0].time;
   let groupInRussia = false;
   for (let i = 0; i < rows.length; i++) {
     const row = rows[i];
