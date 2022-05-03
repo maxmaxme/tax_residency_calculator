@@ -5,6 +5,7 @@ import DatePickerComponent from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import styles from './index.css';
 import { RawIntervals } from '../RawIntervals';
+import { enGB } from 'date-fns/locale';
 
 type Props = {
   intervals: Intervals,
@@ -26,6 +27,7 @@ const DatePicker = (props: {
     <div>
       <DatePickerComponent
         dateFormat="dd.MM.yyyy"
+        locale={enGB}
         {...props}
       />
     </div>

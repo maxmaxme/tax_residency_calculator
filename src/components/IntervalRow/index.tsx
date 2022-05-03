@@ -10,7 +10,7 @@ type Props = {
 
 const formatDatesInterval = (date1: Date, date2: Date) => {
   return (
-    date1.toLocaleDateString() + ' - ' + date2.toLocaleDateString()
+    date1.toLocaleDateString('ru-RU') + ' - ' + date2.toLocaleDateString('ru-RU')
   );
 };
 
