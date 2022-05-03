@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import { DatesInput } from '../DatesInput';
 import { Intervals } from '../../types/interval';
 import { IntervalRows } from '../IntervalRows';
@@ -24,20 +24,14 @@ const isTimeInIntervals = (time: number, intervals: Intervals): boolean => {
   return Object.values(intervals).some(({ start, end }) => time >= start && time <= end);
 };
 
-const calcDays = (intervals: Intervals): Row[] => {
-  let yearEnd = new Date();
+const calcDays = (intervals: Intervals, year: number): Row[] => {
+  const yearEnd = convertToUtc(new Date(year, 11, 31));
+  const yearStart = convertToUtc(new Date(year, 0, 1));
 
-  const maxEndDate = Object.values(intervals).reduce((max, { end }) => Math.max(max, end), 0);
-  if (yearEnd.getTime() < maxEndDate) {
-    yearEnd = new Date(maxEndDate);
-  }
+  yearStart.setHours(0, 0, 0, 0);
   yearEnd.setHours(0, 0, 0, 0);
-  yearEnd = convertToUtc(yearEnd);
+
   const yearEndTimestamp = yearEnd.getTime();
-
-  let yearStart = new Date(yearEnd.getFullYear(), yearEnd.getMonth() - 12, yearEnd.getDate() + 1);
-  yearStart = convertToUtc(yearStart);
-
   const yearStartTimestamp = yearStart.getTime();
 
   const rows = [];
@@ -50,16 +44,37 @@ const calcDays = (intervals: Intervals): Row[] => {
 };
 
 export const App = () => {
-  const [intervalsNotInRussia, setIntervalsNotInRussia] = React.useState<Intervals>(getIntervalsCache());
+  const [year, setYear] = useState(new Date().getFullYear());
+  const [intervalsNotInRussia, setIntervalsNotInRussia] = useState<Intervals>(getIntervalsCache());
   const setIntervals = (intervals: Intervals) => {
     intervals = intervals.sort((a, b) => a.start - b.start);
     setIntervalsCache(intervals);
     setIntervalsNotInRussia(intervals);
   };
 
-  const rows = useMemo(() => calcDays(intervalsNotInRussia), [intervalsNotInRussia]);
+  const rows = useMemo(() => calcDays(intervalsNotInRussia, year), [intervalsNotInRussia, year]);
+  const yearsForSelect = useMemo(() => {
+    const years = [];
+    const count = 7;
+    const startFrom = Math.ceil(new Date().getFullYear() - count / 2);
+    for (let i = 0; i < count; i++) {
+      years.push(startFrom + i);
+    }
+    return years;
+  }, []);
 
   return (<>
+    <div>
+      Year&nbsp;
+      <select
+        onChange={({ target: { value } }) => setYear(Number(value))}
+        value={year}
+      >
+        {yearsForSelect.map((item) => (
+          <option key={item} value={item}>{item}</option>
+        ))}
+      </select>
+    </div>
     <DatesInput intervals={intervalsNotInRussia} setIntervals={setIntervals} />
     <div className={cn(styles.summary_row, styles['summary_row--inside'])}>in russia: {rows.filter(({ inRussia }) => inRussia).length}</div>
     <div className={cn(styles.summary_row, styles['summary_row--outside'])}>not in russia: {rows.filter(({ inRussia }) => !inRussia).length}</div>
