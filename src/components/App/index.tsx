@@ -8,12 +8,12 @@ import styles from './index.css';
 import { isLeapYear } from '../../utils/date';
 
 export type Row = {
-  inRussia: boolean,
+  inCountry: boolean,
   doy: number,
 }
 
 export type GroupedRow = {
-  inRussia: boolean,
+  inCountry: boolean,
   doyStart: number,
   doyEnd: number,
 }
@@ -26,22 +26,22 @@ const calcDays = (intervals: Intervals, year: number): Row[] => {
   const daysInYear = isLeapYear(year) ? 366 : 365;
   const rows = [];
   for (let doy = 1; doy < daysInYear; doy++) {
-    const inRussia = !isTimeInIntervals(new Date(year, 0, doy).getTime(), intervals);
-    rows.push({ inRussia, doy: doy });
+    const inCountry = !isTimeInIntervals(new Date(year, 0, doy).getTime(), intervals);
+    rows.push({ inCountry, doy: doy });
   }
   return rows;
 };
 
 export const App = () => {
   const [year, setYear] = useState(new Date().getFullYear());
-  const [intervalsNotInRussia, setIntervalsNotInRussia] = useState<Intervals>(getIntervalsCache());
+  const [intervalsNotinCountry, setIntervalsNotinCountry] = useState<Intervals>(getIntervalsCache());
   const setIntervals = (intervals: Intervals) => {
     intervals = intervals.sort((a, b) => a.start - b.start);
     setIntervalsCache(intervals);
-    setIntervalsNotInRussia(intervals);
+    setIntervalsNotinCountry(intervals);
   };
 
-  const rows = useMemo(() => calcDays(intervalsNotInRussia, year), [intervalsNotInRussia, year]);
+  const rows = useMemo(() => calcDays(intervalsNotinCountry, year), [intervalsNotinCountry, year]);
   const yearsForSelect = useMemo(() => {
     const years = [];
     const count = 7;
@@ -64,9 +64,9 @@ export const App = () => {
         ))}
       </select>
     </div>
-    <DatesInput intervals={intervalsNotInRussia} setIntervals={setIntervals} />
-    <div className={cn(styles.summary_row, styles['summary_row--inside'])}>in russia: {rows.filter(({ inRussia }) => inRussia).length}</div>
-    <div className={cn(styles.summary_row, styles['summary_row--outside'])}>not in russia: {rows.filter(({ inRussia }) => !inRussia).length}</div>
+    <DatesInput intervals={intervalsNotinCountry} setIntervals={setIntervals} />
+    <div className={cn(styles.summary_row, styles['summary_row--inside'])}>in country: {rows.filter(({ inCountry }) => inCountry).length}</div>
+    <div className={cn(styles.summary_row, styles['summary_row--outside'])}>not in country: {rows.filter(({ inCountry }) => !inCountry).length}</div>
 
     <IntervalRows rows={rows} year={year} />
   </>);

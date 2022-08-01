@@ -7,13 +7,13 @@ const groupRows = (rows: Row[]): GroupedRow[] => {
   const groupedRows = [];
   let prevValue = undefined;
   for (let i = 0; i < rows.length; i++) {
-    if (prevValue !== rows[i].inRussia) {
+    if (prevValue !== rows[i].inCountry) {
       groupedRows.push({
-        inRussia: rows[i].inRussia,
+        inCountry: rows[i].inCountry,
         doyStart: rows[i].doy,
         doyEnd: rows[i].doy,
       });
-      prevValue = rows[i].inRussia;
+      prevValue = rows[i].inCountry;
     } else {
       groupedRows[groupedRows.length - 1].doyEnd = rows[i].doy;
     }
@@ -27,11 +27,11 @@ export const IntervalRows = ({ rows, year }: { rows: Row[], year: number }) => {
 
   return (
     <div className={styles.intervalRows}>
-      {groupedRows.map(({ inRussia, doyStart, doyEnd }, index) => {
+      {groupedRows.map(({ inCountry, doyStart, doyEnd }, index) => {
         return (
           <IntervalRow
             key={index}
-            inRussia={inRussia}
+            inCountry={inCountry}
             dateStart={new Date(year, 0, doyStart)}
             dateEnd={new Date(year, 0, doyEnd)}
           />

@@ -3,7 +3,7 @@ import cn from 'classnames';
 import styles from './index.css';
 
 type Props = {
-  inRussia: boolean;
+  inCountry: boolean;
   dateStart: Date,
   dateEnd: Date,
 }
@@ -23,7 +23,7 @@ const calculateDays = (date1: Date, date2: Date) => {
 };
 
 export const IntervalRow = ({
-  inRussia,
+  inCountry,
   dateStart,
   dateEnd,
 }: Props) => {
@@ -31,7 +31,7 @@ export const IntervalRow = ({
   return (
     <div
       className={cn(styles.row, {
-        [styles['row--in_russia']]: inRussia,
+        [styles['row--in_country']]: inCountry,
       })}
     >
       {formatDatesInterval(dateStart, dateEnd)} ({daysCount} day{daysCount > 1 ? 's' : ''})
