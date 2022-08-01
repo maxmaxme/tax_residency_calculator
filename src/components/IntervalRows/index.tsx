@@ -5,46 +5,35 @@ import styles from './index.css';
 
 const groupRows = (rows: Row[]): GroupedRow[] => {
   const groupedRows = [];
-  let groupStart = rows[0].time;
-  let groupEnd = rows[0].time;
-  let groupInRussia = false;
+  let prevValue = undefined;
   for (let i = 0; i < rows.length; i++) {
-    const row = rows[i];
-    if (row.inRussia !== groupInRussia) {
-      if (groupStart !== groupEnd) {
-        groupedRows.push({
-          inRussia: groupInRussia,
-          timeStart: groupStart,
-          timeEnd: groupEnd,
-        });
-      }
-      groupStart = row.time;
-      groupEnd = row.time;
-      groupInRussia = row.inRussia;
+    if (prevValue !== rows[i].inRussia) {
+      groupedRows.push({
+        inRussia: rows[i].inRussia,
+        doyStart: rows[i].doy,
+        doyEnd: rows[i].doy,
+      });
+      prevValue = rows[i].inRussia;
     } else {
-      groupEnd = row.time;
+      groupedRows[groupedRows.length - 1].doyEnd = rows[i].doy;
     }
   }
-  groupedRows.push({
-    inRussia: groupInRussia,
-    timeStart: groupStart,
-    timeEnd: groupEnd,
-  });
+
   return groupedRows;
 };
 
-export const IntervalRows = ({ rows }: { rows: Row[] }) => {
+export const IntervalRows = ({ rows, year }: { rows: Row[], year: number }) => {
   const groupedRows = useMemo(() => groupRows(rows), [rows]);
 
   return (
     <div className={styles.intervalRows}>
-      {groupedRows.map(({ inRussia, timeStart, timeEnd }, index) => {
+      {groupedRows.map(({ inRussia, doyStart, doyEnd }, index) => {
         return (
           <IntervalRow
             key={index}
             inRussia={inRussia}
-            dateStart={new Date(timeStart)}
-            dateEnd={new Date(timeEnd)}
+            dateStart={new Date(year, 0, doyStart)}
+            dateEnd={new Date(year, 0, doyEnd)}
           />
         );
       })}

@@ -9,6 +9,9 @@ type Props = {
 }
 
 const formatDatesInterval = (date1: Date, date2: Date) => {
+  if (date1.getTime() === date2.getTime()) {
+    return date1.toLocaleDateString('ru-RU');
+  }
   return (
     date1.toLocaleDateString('ru-RU') + ' - ' + date2.toLocaleDateString('ru-RU')
   );
@@ -24,13 +27,14 @@ export const IntervalRow = ({
   dateStart,
   dateEnd,
 }: Props) => {
+  const daysCount = calculateDays(dateStart, dateEnd);
   return (
     <div
       className={cn(styles.row, {
         [styles['row--in_russia']]: inRussia,
       })}
     >
-      {formatDatesInterval(dateStart, dateEnd)} ({calculateDays(dateStart, dateEnd)} days)
+      {formatDatesInterval(dateStart, dateEnd)} ({daysCount} day{daysCount > 1 ? 's' : ''})
     </div>
   );
 };
